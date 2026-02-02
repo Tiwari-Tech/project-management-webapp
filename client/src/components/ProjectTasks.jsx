@@ -3,8 +3,10 @@ import toast from "react-hot-toast";
 import { useDispatch } from "react-redux";
 import { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "@clerk/clerk-react";
 import { deleteTask, updateTask } from "../features/workspaceSlice";
 import { Bug, CalendarIcon, GitCommit, MessageSquare, Square, Trash, XIcon, Zap } from "lucide-react";
+import api from "../configs/api";
 
 const typeIcons = {
     BUG: { icon: Bug, color: "text-red-600 dark:text-red-400" },
@@ -21,6 +23,7 @@ const priorityTexts = {
 };
 
 const ProjectTasks = ({ tasks }) => {
+    const { getToken } = useAuth();
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const [selectedTasks, setSelectedTasks] = useState([]);
@@ -58,8 +61,9 @@ const ProjectTasks = ({ tasks }) => {
         try {
             toast.loading("Updating status...");
 
-            //  Simulate API call
-            await new Promise((resolve) => setTimeout(resolve, 2000));
+            await api.put(`/api/tasks/${taskId}/`, { status: newStatus }, {
+                headers: { Authorization: `Bearer ${await getToken()}` },
+            });
 
             let updatedTask = structuredClone(tasks.find((t) => t.id === taskId));
             updatedTask.status = newStatus;
@@ -80,8 +84,9 @@ const ProjectTasks = ({ tasks }) => {
 
             toast.loading("Deleting tasks...");
 
-            //  Simulate API call
-            await new Promise((resolve) => setTimeout(resolve, 2000));
+            await api.post('/api/tasks/delete', { tasksIds: selectedTasks }, {
+                headers: { Authorization: `Bearer ${await getToken()}` },
+            });
 
             dispatch(deleteTask(selectedTasks));
 
@@ -152,7 +157,7 @@ const ProjectTasks = ({ tasks }) => {
                 <div className="w-full">
                     {/* Desktop/Table View */}
                     <div className="hidden lg:block overflow-x-auto">
-                        <table className="min-w-full text-sm text-left not-dark:bg-white text-zinc-900 dark:text-zinc-300">
+                        <table className="min-w-full text-sm text-left text-zinc-900 dark:text-zinc-300">
                             <thead className="text-xs uppercase dark:bg-zinc-800/70 text-zinc-500 dark:text-zinc-400 ">
                                 <tr>
                                     <th className="pl-2 pr-1">
@@ -230,7 +235,7 @@ const ProjectTasks = ({ tasks }) => {
                                 const { background, prioritycolor } = priorityTexts[task.priority] || {};
 
                                 return (
-                                    <div key={task.id} className=" dark:bg-gradient-to-br dark:from-zinc-800/70 dark:to-zinc-900/50 border border-zinc-300 dark:border-zinc-800 rounded-lg p-4 flex flex-col gap-2">
+                                    <div key={task.id} className="bg-white dark:bg-gradient-to-br dark:from-zinc-800/70 dark:to-zinc-900/50 border border-zinc-300 dark:border-zinc-800 rounded-lg p-4 flex flex-col gap-2">
                                         <div className="flex items-center justify-between">
                                             <h3 className="text-zinc-900 dark:text-zinc-200 text-sm font-semibold">{task.title}</h3>
                                             <input type="checkbox" className="size-4 accent-zinc-600 dark:accent-zinc-500" onChange={() => selectedTasks.includes(task.id) ? setSelectedTasks(selectedTasks.filter((i) => i !== task.id)) : setSelectedTasks((prev) => [...prev, task.id])} checked={selectedTasks.includes(task.id)} />

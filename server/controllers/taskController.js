@@ -29,9 +29,11 @@ export const createTask = async (req, res) => {
 
         const task = await prisma.task.create({
             data: {
+                projectId,
                 title,
                 description,
                 status,
+                type,
                 priority,
                 assigneeId,
                 due_date: new Date(due_date),
@@ -118,7 +120,7 @@ export const deleteTask = async (req, res) => {
     try {
 
         const { userId } = await req.auth();
-        const {taskIds} = req.body;
+        const {tasksIds} = req.body;
         const tasks = await prisma.task.findMany({
             where: { id: { in: taskIds } },
         });
