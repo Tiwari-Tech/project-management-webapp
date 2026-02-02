@@ -9,4 +9,8 @@ export default defineConfig({
     noDiscovery: true,
     include: [],
   },
+  build: {
+    outDir: 'dist',
+    sourcemap: false,
+  },
 })
