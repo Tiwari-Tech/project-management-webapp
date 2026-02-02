@@ -5,25 +5,15 @@ import tailwindcss from '@tailwindcss/vite'
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react(), tailwindcss()],
-  resolve: {
-    alias: {
-      buffer: 'buffer/',
-    },
-  },
-  optimizeDeps: {
-    noDiscovery: true,
-    include: ['buffer'],
-    esbuildOptions: {
-      define: {
-        global: 'globalThis',
-      },
-    },
-  },
   build: {
     outDir: 'dist',
     sourcemap: false,
+    minify: 'esbuild',
+    target: 'esnext',
     rollupOptions: {
-      external: [],
+      output: {
+        manualChunks: undefined,
+      },
     },
   },
   define: {

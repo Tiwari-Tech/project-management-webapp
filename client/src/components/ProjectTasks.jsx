@@ -79,6 +79,7 @@ const ProjectTasks = ({ tasks }) => {
 
     const handleDelete = async () => {
         try {
+            if (typeof window === 'undefined') return;
             const confirm = window.confirm("Are you sure you want to delete the selected tasks?");
             if (!confirm) return;
 

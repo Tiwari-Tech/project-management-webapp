@@ -5,7 +5,7 @@ import { useEffect, useState, useCallback } from "react";
 import { useSearchParams } from "react-router-dom";
 import { CalendarIcon, MessageCircle, PenIcon } from "lucide-react";
 import { useAuth, useUser } from '@clerk/clerk-react';
-import { api } from "../assets/assets.js";
+import api from "../configs/api.js";
 
 const TaskDetails = () => {
 
