@@ -104,20 +104,25 @@ const workspaceSlice = createSlice({
             );
         },
         deleteTask: (state, action) => {
-            state.currentWorkspace.projects.map((p) => {
-                p.tasks = p.tasks.filter((t) => !action.payload.includes(t.id));
-                return p;
-            });
-            // find workspace and project by id and delete task from it
-            state.workspaces = state.workspaces.map((w) =>
-                w.id === state.currentWorkspace.id ? {
-                    ...w, projects: w.projects.map((p) =>
-                        p.id === action.payload.projectId ? {
-                            ...p, tasks: p.tasks.filter((t) => !action.payload.includes(t.id))
-                        } : p
-                    )
-                } : w
-            );
+            // action.payload is an array of task IDs to delete
+            const taskIdsToDelete = action.payload;
+            
+            // Update current workspace
+            if (state.currentWorkspace) {
+                state.currentWorkspace.projects = state.currentWorkspace.projects.map((p) => ({
+                    ...p,
+                    tasks: p.tasks.filter((t) => !taskIdsToDelete.includes(t.id))
+                }));
+            }
+            
+            // Update all workspaces
+            state.workspaces = state.workspaces.map((w) => ({
+                ...w,
+                projects: w.projects.map((p) => ({
+                    ...p,
+                    tasks: p.tasks.filter((t) => !taskIdsToDelete.includes(t.id))
+                }))
+            }));
         }
 
     },

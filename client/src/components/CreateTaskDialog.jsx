@@ -29,7 +29,16 @@ export default function CreateTaskDialog({ showCreateTask, setShowCreateTask, pr
         e.preventDefault();
         setIsSubmitting(true);
         try {
-            const {data} = await api.post('/api/tasks', {...formData, workspaceId: currentWorkspace.id, projectId}, {
+            // Prepare task data, converting empty due_date to null
+            const taskData = {
+                ...formData,
+                workspaceId: currentWorkspace.id,
+                projectId,
+                due_date: formData.due_date ? new Date(formData.due_date).toISOString() : null,
+                assigneeId: formData.assigneeId || null, // Convert empty string to null
+            };
+            
+            const {data} = await api.post('/api/tasks', taskData, {
                 headers: { Authorization: `Bearer ${await getToken()}` },
             });
             setShowCreateTask(false);

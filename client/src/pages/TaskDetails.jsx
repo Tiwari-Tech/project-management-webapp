@@ -40,7 +40,7 @@ const TaskDetails = () => {
 
     const fetchTaskDetails = useCallback(async () => {
         setLoading(true);
-        if (!projectId || !taskId) return;
+        if (!projectId || !taskId || !currentWorkspace) return;
 
         const proj = currentWorkspace.projects.find((p) => p.id === projectId);
         if (!proj) return;

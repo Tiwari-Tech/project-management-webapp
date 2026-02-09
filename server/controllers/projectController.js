@@ -4,7 +4,7 @@ import prisma from "../configs/prisma.js";
 // create a new project
 export const createProject = async (req, res) => {
     try {
-        const { userId } = req.auth;
+        const { userId } = await req.auth();
         const {
             workspaceId,
             name,
@@ -96,7 +96,7 @@ export const createProject = async (req, res) => {
 // Update a project
 export const updateProject = async (req, res) => {
     try {
-        const { userId } = req.auth;
+        const { userId } = await req.auth();
         const { projectId } = req.params;
         const {
             workspaceId,
@@ -172,7 +172,7 @@ export const updateProject = async (req, res) => {
 // Add a member to a project
 export const addMember = async (req, res) => {
     try {
-        const { userId } = req.auth;
+        const { userId } = await req.auth();
         const { projectId } = req.params;
         const { email } = req.body;
 

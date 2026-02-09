@@ -1,4 +1,4 @@
-
+import prisma from "../configs/prisma.js";
 
 // Add comment to a project'
 export const addComment = async (req, res) => {

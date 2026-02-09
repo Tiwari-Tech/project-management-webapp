@@ -63,27 +63,31 @@ const syncUserUpdation = inngest.createFunction(
 //Inngest function to save workspace data to a database
 const syncWorkspaceCreation = inngest.createFunction(
     {id: 'sync/workspace-data-from-clerk'},
-    {event: 'clerk/workspace.created'},
+    {event: 'clerk/organization.created'},
     async ({ event }) => {
         const {data} = event;
-        await prisma.workspace.create({
-            data: {
-                id: data.id,
-                name: data.name,
-                slug: data.slug,
-                ownerId: data.created_by,
-                image_url: data.image_url,
-            }
-        })
+        try {
+            await prisma.workspace.create({
+                data: {
+                    id: data.id,
+                    name: data.name,
+                    slug: data.slug,
+                    ownerId: data.created_by,
+                    image_url: data.image_url,
+                }
+            })
 
-        // Add creator as admin memeber
-        await prisma.workspaceMember.create({
-            data: {
-                userId: data.created_by,
-                workspaceId: data.id,
-                role: "admin",
-            }
-        })
+            // Add creator as admin memeber
+            await prisma.workspaceMember.create({
+                data: {
+                    userId: data.created_by,
+                    workspaceId: data.id,
+                    role: "ADMIN",
+                }
+            })
+        } catch (error) {
+            console.log('Error creating workspace:', error);
+        }
     }
 );
 
@@ -156,10 +160,10 @@ const sendTaskAssignmentEmail = inngest.createFunction(
 
                 const appOrigin = origin || process.env.CLIENT_URL || "";
 
-                await sendEmail({
-                        to: task.assignee.email,
-                        subject: `New Task Assigned: ${task.project.name}`,
-                        body: `<div style="max-width: 600px;">
+                await sendEmail(
+                        task.assignee.email,
+                        `New Task Assigned: ${task.project.name}`,
+                        `<div style="max-width: 600px;">
                                 <h2>Hi ${task.assignee.name}</h2>
 
                                 <p style="font-size: 16px;">You have been assigned a new task: ${task.title}</p>
@@ -174,8 +178,8 @@ const sendTaskAssignmentEmail = inngest.createFunction(
                                 <p style="margin-top: 20px; font-size: 14px; color: #6c757d;">
                                         Please make sure to review and complete it before the due date.
                                 </p>
-                        </div>`,
-                });
+                        </div>`
+                );
 
                 if (new Date(task.due_date).toDateString() !== new Date().toDateString()) {
                         await step.sleepUntil("wait-until-due-date", new Date(task.due_date));
@@ -189,10 +193,10 @@ const sendTaskAssignmentEmail = inngest.createFunction(
 
                         if (!latestTask) return;
                         if (latestTask.status !== "completed") {
-                                await sendEmail({
-                                        to: latestTask.assignee.email,
-                                        subject: `Reminder: Task "${latestTask.title}" is due today`,
-                                        body: `<div style="max-width: 600px;">
+                                await sendEmail(
+                                        latestTask.assignee.email,
+                                        `Reminder: Task "${latestTask.title}" is due today`,
+                                        `<div style="max-width: 600px;">
     <h2>Hi ${latestTask.assignee.name}, 👋</h2>
 
     <p style="font-size: 16px;">You have a task due in ${latestTask.project.name}:</p>
@@ -215,8 +219,8 @@ const sendTaskAssignmentEmail = inngest.createFunction(
 <p style="margin-top: 20px; font-size: 14px; color: #6c757d;">
     Please make sure to review and complete it before the due date.
 </p>
-</div>`,
-                                });
+</div>`
+                                );
                         }
                 });
         }
