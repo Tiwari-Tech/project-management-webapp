@@ -4,9 +4,8 @@
 
 ### A full-stack web application to plan, track, and collaborate on projects — all in one place.
 
-[![Live Demo](https://img.shields.io/badge/🚀_Live_Demo-Vercel-black?style=for-the-badge)](https://project-mgt-app-server.vercel.app)
+
 [![JavaScript](https://img.shields.io/badge/JavaScript-99%25-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black)](https://github.com/Tiwari-Tech/project-management-webapp)
-[![License](https://img.shields.io/badge/License-MIT-blue?style=for-the-badge)](LICENSE)
 
 </div>
 
